@@ -9,13 +9,15 @@
     <TextView
         android:id="@+id/task_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:padding="2dp"/>
 
     <TextView
         android:id="@+id/task_description"
         android:background="@android:color/holo_blue_bright"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"/>
+        android:layout_margin="2dp"
+        android:padding="2dp"/>
 
 </LinearLayout>
