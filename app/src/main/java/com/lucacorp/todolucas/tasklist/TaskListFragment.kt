@@ -28,7 +28,6 @@ class TaskListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -39,6 +38,10 @@ class TaskListFragment : Fragment() {
         val adapter = TaskListAdapter()
         binding.recyclerView.adapter = adapter
         adapter.submitList(taskList.toList())
+        adapter.onClickDelete = { task ->
+            taskList.remove(task)
+            adapter.submitList(taskList.toList())
+        }
 
         binding.addTaskFloatingButton.setOnClickListener(){
             taskList.add(Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}"))

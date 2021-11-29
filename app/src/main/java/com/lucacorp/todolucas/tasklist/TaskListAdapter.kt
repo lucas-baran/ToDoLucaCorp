@@ -11,10 +11,16 @@ class TaskListAdapter() : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(Task
 
     private lateinit var binding: ItemTaskBinding
 
+    var onClickDelete: (Task) -> Unit = {}
+
     inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(task: Task) {
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
+
+            binding.deleteButton.setOnClickListener(){
+                onClickDelete(task)
+            }
         }
     }
 
