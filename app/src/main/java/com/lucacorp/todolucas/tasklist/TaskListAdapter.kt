@@ -7,11 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.lucacorp.todolucas.databinding.ItemTaskBinding
 
-class TaskListAdapter() : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback) {
+class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback) {
 
     private lateinit var binding: ItemTaskBinding
-
-    var onClickDelete: (Task) -> Unit = {}
 
     inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(task: Task) {
@@ -19,7 +17,10 @@ class TaskListAdapter() : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(Task
             binding.taskDescription.text = task.description
 
             binding.deleteButton.setOnClickListener(){
-                onClickDelete(task)
+                listener.onClickDelete(task)
+            }
+            binding.editButton.setOnClickListener(){
+                listener.onClickEdit(task)
             }
         }
     }

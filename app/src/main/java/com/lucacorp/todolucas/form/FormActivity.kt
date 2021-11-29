@@ -17,9 +17,14 @@ class FormActivity : AppCompatActivity() {
         binding = ActivityFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val task = intent.getSerializableExtra("task") as? Task
+        binding.titleEditText.setText(task?.title)
+        binding.descriptionEditText.setText(task?.description)
+
+        val id = task?.id ?: UUID.randomUUID().toString()
         binding.validateTaskButton.setOnClickListener {
             val newTask = Task(
-                id = UUID.randomUUID().toString(),
+                id = id,
                 title = binding.titleEditText.text.toString(),
                 description = binding.descriptionEditText.text.toString()
             )

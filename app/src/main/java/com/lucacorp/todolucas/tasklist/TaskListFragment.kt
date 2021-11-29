@@ -25,6 +25,33 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
 
+    private val adapterListener = object : TaskListListener {
+        override fun onClickDelete(task: Task) {
+            taskList.remove(task)
+            adapter.submitList(taskList.toList())
+        }
+
+        override fun onClickEdit(task: Task) {
+            val intent = Intent(activity, FormActivity::class.java)
+            intent.putExtra("task", task)
+            formLauncher.launch(intent)
+        }
+    }
+
+    private val adapter : TaskListAdapter = TaskListAdapter(listener= adapterListener)
+
+    private val formLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = result.data?.getSerializableExtra("task") as? Task
+        if (task != null)
+        {
+            val oldTask = taskList.firstOrNull { it.id == task.id }
+            if (oldTask != null) taskList.remove(oldTask)
+
+            taskList.add(task)
+            adapter.submitList(taskList.toList())
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,22 +65,8 @@ class TaskListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
-        val adapter = TaskListAdapter()
         binding.recyclerView.adapter = adapter
         adapter.submitList(taskList.toList())
-        adapter.onClickDelete = { task ->
-            taskList.remove(task)
-            adapter.submitList(taskList.toList())
-        }
-
-        val formLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val task = result.data?.getSerializableExtra("task") as? Task
-            if (task != null)
-            {
-                taskList.add(task)
-                adapter.submitList(taskList.toList())
-            }
-        }
 
         binding.addTaskFloatingButton.setOnClickListener(){
             val intent = Intent(activity, FormActivity::class.java)
