@@ -1,5 +1,6 @@
 package com.lucacorp.todolucas.form
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -17,11 +18,23 @@ class FormActivity : AppCompatActivity() {
         binding = ActivityFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val task = intent.getSerializableExtra("task") as? Task
-        binding.titleEditText.setText(task?.title)
-        binding.descriptionEditText.setText(task?.description)
+        val id : String
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                id = UUID.randomUUID().toString()
+                if (intent.type == "text/plain") {
+                    binding.descriptionEditText.setText(intent.getStringExtra(Intent.EXTRA_TEXT))
+                }
+            }
+            else -> {
+                val task = intent?.getSerializableExtra("task") as? Task
+                binding.titleEditText.setText(task?.title)
+                binding.descriptionEditText.setText(task?.description)
 
-        val id = task?.id ?: UUID.randomUUID().toString()
+                id = task?.id ?: UUID.randomUUID().toString()
+            }
+        }
+
         binding.validateTaskButton.setOnClickListener {
             val newTask = Task(
                 id = id,

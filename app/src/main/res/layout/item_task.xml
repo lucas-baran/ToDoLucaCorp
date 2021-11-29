@@ -39,6 +39,13 @@
             android:backgroundTint="@color/white"
             android:src="@drawable/ic_baseline_edit_24" />
 
+        <ImageButton
+            android:id="@+id/share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:src="@drawable/ic_baseline_share_24" />
+
     </LinearLayout>
 
 
