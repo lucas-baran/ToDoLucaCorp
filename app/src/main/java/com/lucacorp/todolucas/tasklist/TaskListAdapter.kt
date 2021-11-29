@@ -1,28 +1,26 @@
 package com.lucacorp.todolucas.tasklist
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.lucacorp.todolucas.R
+import com.lucacorp.todolucas.databinding.ItemTaskBinding
 
 class TaskListAdapter() : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback) {
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(task: Task) {
-            val taskTitleTextView = itemView.findViewById<TextView>(R.id.task_title)
-            taskTitleTextView.text = task.title
 
-            val taskDescriptionTextView = itemView.findViewById<TextView>(R.id.task_description)
-            taskDescriptionTextView.text = task.description
+    private lateinit var binding: ItemTaskBinding
+
+    inner class TaskViewHolder(val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(task: Task) {
+            binding.taskTitle.text = task.title
+            binding.taskDescription.text = task.description
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(itemView)
+        binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TaskViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
