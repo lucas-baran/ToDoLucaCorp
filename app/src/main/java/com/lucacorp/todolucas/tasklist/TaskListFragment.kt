@@ -1,15 +1,18 @@
 package com.lucacorp.todolucas.tasklist
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentTaskListBinding
+import com.lucacorp.todolucas.form.FormActivity
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -43,9 +46,18 @@ class TaskListFragment : Fragment() {
             adapter.submitList(taskList.toList())
         }
 
+        val formLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = result.data?.getSerializableExtra("task") as? Task
+            if (task != null)
+            {
+                taskList.add(task)
+                adapter.submitList(taskList.toList())
+            }
+        }
+
         binding.addTaskFloatingButton.setOnClickListener(){
-            taskList.add(Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}"))
-            adapter.submitList(taskList.toList())
+            val intent = Intent(activity, FormActivity::class.java)
+            formLauncher.launch(intent)
         }
     }
 }

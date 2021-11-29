@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToDoLucas">
         <activity
+            android:name=".form.FormActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
