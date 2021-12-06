@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentTaskListBinding
 import com.lucacorp.todolucas.form.FormActivity
+import com.lucacorp.todolucas.network.Api
+import kotlinx.coroutines.launch
 import java.util.*
 
 class TaskListFragment : Fragment() {
@@ -82,6 +85,14 @@ class TaskListFragment : Fragment() {
         binding.addTaskFloatingButton.setOnClickListener(){
             val intent = Intent(activity, FormActivity::class.java)
             formLauncher.launch(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            val userInfo = Api.userWebService.getInfo().body()!!
+            binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
     }
 }
