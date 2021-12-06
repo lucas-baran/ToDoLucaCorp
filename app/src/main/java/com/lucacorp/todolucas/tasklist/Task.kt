@@ -1,5 +1,14 @@
 package com.lucacorp.todolucas.tasklist
 
+import kotlinx.serialization.SerialName
 import java.io.Serializable
 
-data class Task(val id: String, val title: String, val description: String = "Task description") : Serializable
+@kotlinx.serialization.Serializable
+data class Task(
+    @SerialName("id")
+    val id: String,
+    @SerialName("title")
+    val title: String,
+    @SerialName("description")
+    val description: String = "Task description"
+) : Serializable

@@ -15,6 +15,8 @@ import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentTaskListBinding
 import com.lucacorp.todolucas.form.FormActivity
 import com.lucacorp.todolucas.network.Api
+import com.lucacorp.todolucas.network.TasksRepository
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -22,16 +24,14 @@ class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
 
-    private val taskList = mutableListOf(
-        Task(id = "id_1", title = "Task 1", description = "description 1"),
-        Task(id = "id_2", title = "Task 2"),
-        Task(id = "id_3", title = "Task 3")
-    )
+    private val tasksRepository = TasksRepository()
 
     private val adapterListener = object : TaskListListener {
         override fun onClickDelete(task: Task) {
-            taskList.remove(task)
-            adapter.submitList(taskList.toList())
+            /// Delete task in TasksRepository
+            lifecycleScope.launch {
+                tasksRepository.deleteTask(task.id)
+            }
         }
 
         override fun onClickEdit(task: Task) {
@@ -58,11 +58,17 @@ class TaskListFragment : Fragment() {
         val task = result.data?.getSerializableExtra("task") as? Task
         if (task != null)
         {
-            val oldTask = taskList.firstOrNull { it.id == task.id }
-            if (oldTask != null) taskList.remove(oldTask)
-
-            taskList.add(task)
-            adapter.submitList(taskList.toList())
+            val oldTask = tasksRepository.taskList.value.firstOrNull { it.id == task.id }
+            if (oldTask != null) {
+                lifecycleScope.launch {
+                    tasksRepository.updateTask(task)
+                }
+            }
+            else {
+                lifecycleScope.launch {
+                    tasksRepository.createTask(task)
+                }
+            }
         }
     }
 
@@ -80,11 +86,16 @@ class TaskListFragment : Fragment() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
         binding.recyclerView.adapter = adapter
-        adapter.submitList(taskList.toList())
 
         binding.addTaskFloatingButton.setOnClickListener(){
             val intent = Intent(activity, FormActivity::class.java)
             formLauncher.launch(intent)
+        }
+
+        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+            tasksRepository.taskList.collect {
+                adapter.submitList(it)
+            }
         }
     }
 
@@ -93,6 +104,10 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val userInfo = Api.userWebService.getInfo().body()!!
             binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+        }
+
+        lifecycleScope.launch {
+            tasksRepository.refresh() // on demande de rafraîchir les données sans attendre le retour directement
         }
     }
 }
