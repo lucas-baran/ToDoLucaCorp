@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,14 +25,12 @@ class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
 
-    private val tasksRepository = TasksRepository()
+    private val viewModel: TaskListViewModel by viewModels()
 
     private val adapterListener = object : TaskListListener {
         override fun onClickDelete(task: Task) {
             /// Delete task in TasksRepository
-            lifecycleScope.launch {
-                tasksRepository.deleteTask(task.id)
-            }
+            viewModel.deleteTask(task)
         }
 
         override fun onClickEdit(task: Task) {
@@ -58,16 +57,12 @@ class TaskListFragment : Fragment() {
         val task = result.data?.getSerializableExtra("task") as? Task
         if (task != null)
         {
-            val oldTask = tasksRepository.taskList.value.firstOrNull { it.id == task.id }
+            val oldTask = viewModel.taskList.value.firstOrNull { it.id == task.id }
             if (oldTask != null) {
-                lifecycleScope.launch {
-                    tasksRepository.updateTask(task)
-                }
+                viewModel.updateTask(task)
             }
             else {
-                lifecycleScope.launch {
-                    tasksRepository.createTask(task)
-                }
+                viewModel.createTask(task)
             }
         }
     }
@@ -92,8 +87,9 @@ class TaskListFragment : Fragment() {
             formLauncher.launch(intent)
         }
 
-        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
-            tasksRepository.taskList.collect {
+        // on lance une coroutine car `collect` est `suspend`
+        lifecycleScope.launch {
+            viewModel.taskList.collect {
                 adapter.submitList(it)
             }
         }
@@ -106,8 +102,6 @@ class TaskListFragment : Fragment() {
             binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
 
-        lifecycleScope.launch {
-            tasksRepository.refresh() // on demande de rafraîchir les données sans attendre le retour directement
-        }
+        viewModel.refresh()
     }
 }
