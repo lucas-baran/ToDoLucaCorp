@@ -10,11 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToDoLucas">
         <activity
+            android:name=".user.UserInfoActivity"
+            android:exported="true" />
+        <activity
             android:name=".form.FormActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>

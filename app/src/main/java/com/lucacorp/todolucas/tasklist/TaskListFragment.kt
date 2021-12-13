@@ -11,12 +11,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentTaskListBinding
 import com.lucacorp.todolucas.form.FormActivity
 import com.lucacorp.todolucas.network.Api
 import com.lucacorp.todolucas.network.TasksRepository
+import com.lucacorp.todolucas.user.UserInfoActivity
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
@@ -82,14 +85,19 @@ class TaskListFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(activity)
         binding.recyclerView.adapter = adapter
 
-        binding.addTaskFloatingButton.setOnClickListener(){
+        binding.addTaskFloatingButton.setOnClickListener {
             val intent = Intent(activity, FormActivity::class.java)
+            formLauncher.launch(intent)
+        }
+
+        binding.userImage.setOnClickListener {
+            val intent = Intent(activity, UserInfoActivity::class.java)
             formLauncher.launch(intent)
         }
 
         // on lance une coroutine car `collect` est `suspend`
         lifecycleScope.launch {
-            viewModel.taskList.collect {
+            viewModel.taskList.collectLatest {
                 adapter.submitList(it)
             }
         }
@@ -100,6 +108,10 @@ class TaskListFragment : Fragment() {
         lifecycleScope.launch {
             val userInfo = Api.userWebService.getInfo().body()!!
             binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+        }
+
+        binding.userImage.load("https://cdn.discordapp.com/avatars/188385753686999040/164e4788ec23ffc3e58fe39cb3451694.png") {
+            transformations(CircleCropTransformation())
         }
 
         viewModel.refresh()
