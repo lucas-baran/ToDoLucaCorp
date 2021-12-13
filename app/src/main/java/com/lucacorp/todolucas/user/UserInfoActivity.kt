@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil.load
+import coil.transform.CircleCropTransformation
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.ActivityUserInfoBinding
 import com.lucacorp.todolucas.network.Api
@@ -46,6 +47,7 @@ class UserInfoActivity : AppCompatActivity() {
                 binding.userImage.load(result.body()?.avatar) {
                     // affiche une image en cas d'erreur:
                     error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
                 }
             }
         }
@@ -85,6 +87,7 @@ class UserInfoActivity : AppCompatActivity() {
                 binding.userImage.load(result.body()?.avatar) {
                     // affiche une image en cas d'erreur:
                     error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
                 }
             }
         }
