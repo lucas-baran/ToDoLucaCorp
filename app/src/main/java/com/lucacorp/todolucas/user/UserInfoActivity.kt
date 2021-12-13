@@ -35,8 +35,6 @@ class UserInfoActivity : AppCompatActivity() {
         binding = ActivityUserInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.userImage.load("https://cdn.discordapp.com/avatars/188385753686999040/164e4788ec23ffc3e58fe39cb3451694.png")
-
         binding.takePictureButton.setOnClickListener {
             askCameraPermissionAndOpenCamera()
         }
@@ -47,6 +45,11 @@ class UserInfoActivity : AppCompatActivity() {
                 binding.userImage.load(result.body()?.avatar) {
                     // affiche une image en cas d'erreur:
                     error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
+                }
+            }
+            else{
+                binding.userImage.load(R.drawable.ic_launcher_background) {
                     transformations(CircleCropTransformation())
                 }
             }

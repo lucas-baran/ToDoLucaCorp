@@ -27,6 +27,7 @@ import java.util.*
 class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
+    private val userWebService = Api.userWebService
 
     private val viewModel: TaskListViewModel by viewModels()
 
@@ -110,8 +111,18 @@ class TaskListFragment : Fragment() {
             binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
 
-        binding.userImage.load("https://cdn.discordapp.com/avatars/188385753686999040/164e4788ec23ffc3e58fe39cb3451694.png") {
-            transformations(CircleCropTransformation())
+        lifecycleScope.launch {
+            val result = userWebService.getInfo()
+            if (result.isSuccessful){
+                binding.userImage.load(result.body()?.avatar) {
+                    transformations(CircleCropTransformation())
+                }
+            }
+            else {
+                binding.userImage.load(R.drawable.ic_launcher_background) {
+                    transformations(CircleCropTransformation())
+                }
+            }
         }
 
         viewModel.refresh()
