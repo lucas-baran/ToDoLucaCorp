@@ -42,6 +42,10 @@ class UserInfoActivity : AppCompatActivity() {
             askCameraPermissionAndOpenCamera()
         }
 
+        binding.uploadImageButton.setOnClickListener {
+            pickImage()
+        }
+
         lifecycleScope.launch {
             val result = userWebService.getInfo()
             if (result.isSuccessful) {
@@ -87,6 +91,11 @@ class UserInfoActivity : AppCompatActivity() {
                     transformations(CircleCropTransformation())
                 }
             }
+            else{
+                binding.userImage.load(R.drawable.ic_launcher_background) {
+                    transformations(CircleCropTransformation())
+                }
+            }
         }
     }
 
@@ -116,4 +125,13 @@ class UserInfoActivity : AppCompatActivity() {
             filename = "temp.jpeg",
             body = contentResolver.openInputStream(uri)!!.readBytes().toRequestBody()
         )
+
+    // register
+    private val pickInGallery = registerForActivityResult(ActivityResultContracts.GetContent()) {
+        if (it == null) Toast.makeText(this, "Oh no! 😢", Toast.LENGTH_LONG).show()
+        else handleImage(it)
+    }
+
+    // use
+    private fun pickImage() = pickInGallery.launch("image/*")
 }
