@@ -7,11 +7,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
+import com.lucacorp.todolucas.BuildConfig
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.ActivityUserInfoBinding
 import com.lucacorp.todolucas.network.Api
@@ -74,15 +77,6 @@ class UserInfoActivity : AppCompatActivity() {
             .show()
     }
 
-    // register
-    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        val tmpFile = File.createTempFile("avatar", "jpeg")
-        tmpFile.outputStream().use {
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
-        }
-        handleImage(tmpFile.toUri())
-    }
-
     private fun handleImage(uri: Uri) {
         lifecycleScope.launch {
             val result = userWebService.updateAvatar(convert(uri))
@@ -96,8 +90,24 @@ class UserInfoActivity : AppCompatActivity() {
         }
     }
 
+    // create a temp file and get a uri for it
+    private val photoUri by lazy {
+        FileProvider.getUriForFile(
+            this,
+            BuildConfig.APPLICATION_ID +".fileprovider",
+            File.createTempFile("avatar", ".jpeg", externalCacheDir)
+
+        )
+    }
+
+    // register
+    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) handleImage(photoUri)
+        else Toast.makeText(this, "Erreur ! 😢", Toast.LENGTH_LONG).show()
+    }
+
     // use
-    private fun openCamera() = takePicture.launch(null)
+    private fun openCamera() = takePicture.launch(photoUri)
 
     // convert
     private fun convert(uri: Uri) =
