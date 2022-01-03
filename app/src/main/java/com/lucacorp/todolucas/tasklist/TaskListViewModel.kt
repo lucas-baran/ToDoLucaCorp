@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 // Le ViewModel met à jour la liste de task qui est un StateFlow
 class TaskListViewModel: ViewModel() {
     private val repository = TasksRepository()
+
     private val _taskList = MutableStateFlow<List<Task>>(value = emptyList())
     public val taskList: StateFlow<List<Task>> = _taskList
 

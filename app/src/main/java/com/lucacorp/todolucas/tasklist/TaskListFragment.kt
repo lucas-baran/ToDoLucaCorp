@@ -10,31 +10,28 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentTaskListBinding
 import com.lucacorp.todolucas.form.FormActivity
 import com.lucacorp.todolucas.network.Api
-import com.lucacorp.todolucas.network.TasksRepository
 import com.lucacorp.todolucas.user.UserInfoActivity
+import com.lucacorp.todolucas.user.UserInfoViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.util.*
 
 class TaskListFragment : Fragment() {
 
     private lateinit var binding: FragmentTaskListBinding
-    private val userWebService = Api.userWebService
 
-    private val viewModel: TaskListViewModel by viewModels()
+    private val taskListViewModel: TaskListViewModel by viewModels()
+    private val userViewModel: UserInfoViewModel by viewModels()
 
     private val adapterListener = object : TaskListListener {
         override fun onClickDelete(task: Task) {
             /// Delete task in TasksRepository
-            viewModel.deleteTask(task)
+            taskListViewModel.deleteTask(task)
         }
 
         override fun onClickEdit(task: Task) {
@@ -61,12 +58,12 @@ class TaskListFragment : Fragment() {
         val task = result.data?.getSerializableExtra("task") as? Task
         if (task != null)
         {
-            val oldTask = viewModel.taskList.value.firstOrNull { it.id == task.id }
+            val oldTask = taskListViewModel.taskList.value.firstOrNull { it.id == task.id }
             if (oldTask != null) {
-                viewModel.updateTask(task)
+                taskListViewModel.updateTask(task)
             }
             else {
-                viewModel.createTask(task)
+                taskListViewModel.createTask(task)
             }
         }
     }
@@ -98,33 +95,28 @@ class TaskListFragment : Fragment() {
 
         // on lance une coroutine car `collect` est `suspend`
         lifecycleScope.launch {
-            viewModel.taskList.collectLatest {
+            taskListViewModel.taskList.collectLatest {
                 adapter.submitList(it)
+            }
+        }
+
+        lifecycleScope.launch {
+            userViewModel.userInfo.collectLatest {
+                binding.userInfoTextView.text = "${it.firstName} ${it.lastName}"
+
+                binding.userImage.load(it?.avatar) {
+                    // affiche une image en cas d'erreur:
+                    error(R.drawable.ic_launcher_background)
+                    transformations(CircleCropTransformation())
+                }
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch {
-            val userInfo = Api.userWebService.getInfo().body()!!
-            binding.userInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
-        }
 
-        lifecycleScope.launch {
-            val result = userWebService.getInfo()
-            if (result.isSuccessful){
-                binding.userImage.load(result.body()?.avatar) {
-                    transformations(CircleCropTransformation())
-                }
-            }
-            else {
-                binding.userImage.load(R.drawable.ic_launcher_background) {
-                    transformations(CircleCropTransformation())
-                }
-            }
-        }
-
-        viewModel.refresh()
+        taskListViewModel.refresh()
+        userViewModel.refresh()
     }
 }

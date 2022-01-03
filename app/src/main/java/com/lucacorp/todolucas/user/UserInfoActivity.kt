@@ -9,8 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -18,6 +20,8 @@ import com.lucacorp.todolucas.BuildConfig
 import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.ActivityUserInfoBinding
 import com.lucacorp.todolucas.network.Api
+import com.lucacorp.todolucas.network.UserInfo
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -25,7 +29,8 @@ import java.io.File
 
 class UserInfoActivity : AppCompatActivity() {
     private lateinit var binding : ActivityUserInfoBinding
-    private val userWebService = Api.userWebService
+
+    private val userViewModel: UserInfoViewModel by viewModels()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { accepted ->
@@ -46,21 +51,34 @@ class UserInfoActivity : AppCompatActivity() {
             pickImage()
         }
 
+        binding.validateUserInfoButton.setOnClickListener {
+            userViewModel.updateUserInfo(UserInfo(
+                email = binding.emailEditText.text.toString(),
+                firstName = binding.firstnameEditText.text.toString(),
+                lastName = binding.lastnameEditText.text.toString()))
+            finish()
+        }
+
+        // on lance une coroutine car `collect` est `suspend`
         lifecycleScope.launch {
-            val result = userWebService.getInfo()
-            if (result.isSuccessful) {
-                binding.userImage.load(result.body()?.avatar) {
+            userViewModel.userInfo.collectLatest {
+                binding.userImage.load(it?.avatar) {
                     // affiche une image en cas d'erreur:
                     error(R.drawable.ic_launcher_background)
                     transformations(CircleCropTransformation())
                 }
-            }
-            else{
-                binding.userImage.load(R.drawable.ic_launcher_background) {
-                    transformations(CircleCropTransformation())
-                }
+
+                binding.emailEditText.setText(userViewModel.userInfo.value.email);
+                binding.firstnameEditText.setText(userViewModel.userInfo.value.firstName);
+                binding.lastnameEditText.setText(userViewModel.userInfo.value.lastName);
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        userViewModel.refresh()
     }
 
     private fun askCameraPermissionAndOpenCamera() {
@@ -83,19 +101,7 @@ class UserInfoActivity : AppCompatActivity() {
 
     private fun handleImage(uri: Uri) {
         lifecycleScope.launch {
-            val result = userWebService.updateAvatar(convert(uri))
-            if (result.isSuccessful) {
-                binding.userImage.load(result.body()?.avatar) {
-                    // affiche une image en cas d'erreur:
-                    error(R.drawable.ic_launcher_background)
-                    transformations(CircleCropTransformation())
-                }
-            }
-            else{
-                binding.userImage.load(R.drawable.ic_launcher_background) {
-                    transformations(CircleCropTransformation())
-                }
-            }
+            userViewModel.updateUserAvatar(convert(uri))
         }
     }
 
