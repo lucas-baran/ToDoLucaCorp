@@ -1,5 +1,7 @@
 package com.lucacorp.todolucas.network
 
+import android.content.Context
+import android.preference.PreferenceManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -47,5 +49,14 @@ object Api {
 
     val tasksWebService by lazy {
         retrofit.create(TasksWebService::class.java)
+    }
+
+    lateinit var appContext: Context
+
+    const val SHARED_PREF_TOKEN_KEY = "auth_token_key"
+
+    fun setUpContext(context: Context) {
+        appContext = context
+        PreferenceManager.getDefaultSharedPreferences(context).getString(SHARED_PREF_TOKEN_KEY, "")
     }
 }

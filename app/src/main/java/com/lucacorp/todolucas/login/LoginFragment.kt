@@ -26,8 +26,6 @@ import com.lucacorp.todolucas.tasklist.TaskListFragment
 import com.lucacorp.todolucas.user.UserInfoViewModel
 import kotlinx.coroutines.launch
 
-const val SHARED_PREF_TOKEN_KEY = "auth_token_key"
-
 class LoginFragment: Fragment() {
 
     private val userWebService = Api.userWebService
@@ -54,7 +52,7 @@ class LoginFragment: Fragment() {
 
                     if (response.isSuccessful){
                         PreferenceManager.getDefaultSharedPreferences(context).edit {
-                            putString(SHARED_PREF_TOKEN_KEY, response.body()?.token)
+                            putString(Api.SHARED_PREF_TOKEN_KEY, response.body()?.token)
                         }
                         findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
                     }
