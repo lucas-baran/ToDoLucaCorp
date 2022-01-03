@@ -14,7 +14,9 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.lucacorp.todolucas.MainActivity
+import com.lucacorp.todolucas.R
 import com.lucacorp.todolucas.databinding.FragmentLoginBinding
 import com.lucacorp.todolucas.form.FormActivity
 import com.lucacorp.todolucas.network.Api
@@ -54,8 +56,7 @@ class LoginFragment: Fragment() {
                         PreferenceManager.getDefaultSharedPreferences(context).edit {
                             putString(SHARED_PREF_TOKEN_KEY, response.body()?.token)
                         }
-                        val intent = Intent(activity, MainActivity::class.java)
-                        startActivity(intent)
+                        findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
                     }
                     else{
                         Toast.makeText(context, "Erreur de connexion", Toast.LENGTH_LONG).show()
