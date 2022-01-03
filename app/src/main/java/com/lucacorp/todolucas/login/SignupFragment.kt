@@ -36,7 +36,7 @@ class SignupFragment: Fragment() {
             if (binding.emailEditText.text.isNotEmpty() && binding.passwordEditText.text.isNotEmpty()
                 && binding.firstnameEditText.text.isNotEmpty() && binding.lastnameEditText.text.isNotEmpty()
                 && binding.confirmPasswordEditText.text.isNotEmpty()
-                && binding.passwordEditText.text.equals(binding.confirmPasswordEditText.text.isNotEmpty())) {
+                && binding.passwordEditText.text.toString() == binding.confirmPasswordEditText.text.toString()) {
                 lifecycleScope.launch {
                     val signupForm = SignUpForm(
                         firstname = binding.firstnameEditText.text.toString(),
