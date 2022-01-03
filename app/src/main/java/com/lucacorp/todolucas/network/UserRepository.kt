@@ -1,7 +1,10 @@
 package com.lucacorp.todolucas.network
 
+import com.lucacorp.todolucas.login.LoginForm
+import com.lucacorp.todolucas.login.LoginResponse
 import com.lucacorp.todolucas.tasklist.Task
 import okhttp3.MultipartBody
+import retrofit2.Response
 
 class UserRepository {
     private val userWebService = Api.userWebService
@@ -17,5 +20,9 @@ class UserRepository {
 
     suspend fun updateUserInfo(user: UserInfo) {
         userWebService.update(user)
+    }
+
+    suspend fun login(user: LoginForm) {
+        userWebService.login(user)
     }
 }

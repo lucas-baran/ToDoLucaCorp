@@ -1,7 +1,9 @@
 package com.lucacorp.todolucas.user
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lucacorp.todolucas.login.LoginForm
 import com.lucacorp.todolucas.network.TasksRepository
 import com.lucacorp.todolucas.network.UserInfo
 import com.lucacorp.todolucas.network.UserRepository
@@ -43,6 +45,13 @@ class UserInfoViewModel: ViewModel() {
     fun updateUserInfo(user: UserInfo) {
         viewModelScope.launch {
             repository.updateUserInfo(user)
+            refresh()
+        }
+    }
+
+    fun login(user: LoginForm) {
+        viewModelScope.launch {
+            repository.login(user)
             refresh()
         }
     }
