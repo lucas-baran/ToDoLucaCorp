@@ -52,9 +52,9 @@ class LoginFragment: Fragment() {
                     if (response.isSuccessful){
                         PreferenceManager.getDefaultSharedPreferences(context).edit {
                             putString(SHARED_PREF_TOKEN_KEY, response.body()?.token)
-                            val intent = Intent(activity, TaskListFragment::class.java)
-                            startActivity(intent)
                         }
+                        val intent = Intent(activity, TaskListFragment::class.java)
+                        startActivity(intent)
                     }
                     else{
                         Toast.makeText(context, "Erreur de connexion", Toast.LENGTH_LONG).show()
