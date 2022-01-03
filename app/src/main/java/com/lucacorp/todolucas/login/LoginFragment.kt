@@ -30,7 +30,6 @@ class LoginFragment: Fragment() {
 
     private val userWebService = Api.userWebService
     private lateinit var binding: FragmentLoginBinding
-    private val userViewModel: UserInfoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

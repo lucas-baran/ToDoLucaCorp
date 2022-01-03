@@ -15,7 +15,11 @@
     <fragment
         android:id="@+id/signupFragment"
         android:name="com.lucacorp.todolucas.login.SignupFragment"
-        android:label="SignupFragment" />
+        android:label="SignupFragment" >
+        <action
+            android:id="@+id/action_signupFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/authentificationFragment"
         android:name="com.lucacorp.todolucas.login.AuthentificationFragment"
