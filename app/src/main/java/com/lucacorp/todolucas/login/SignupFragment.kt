@@ -54,7 +54,7 @@ class SignupFragment: Fragment() {
                         findNavController().navigate(R.id.action_signupFragment_to_taskListFragment)
                     }
                     else{
-                        Toast.makeText(context, "Erreur de création", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, response.errorBody().toString(), Toast.LENGTH_LONG).show()
                     }
                 }
             }
