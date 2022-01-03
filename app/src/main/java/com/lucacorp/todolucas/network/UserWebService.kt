@@ -1,5 +1,7 @@
 package com.lucacorp.todolucas.network
 
+import com.lucacorp.todolucas.login.LoginForm
+import com.lucacorp.todolucas.login.LoginResponse
 import com.lucacorp.todolucas.tasklist.Task
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -15,4 +17,7 @@ interface UserWebService {
 
     @PATCH("users")
     suspend fun update(@Body user: UserInfo): Response<UserInfo>
+
+    @POST("users/login")
+    suspend fun login(@Body user: LoginForm): Response<LoginResponse>
 }

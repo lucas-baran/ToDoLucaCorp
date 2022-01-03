@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/authentificationFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.lucacorp.todolucas.login.LoginFragment"
+        android:label="LoginFragment" />
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.lucacorp.todolucas.login.SignupFragment"
+        android:label="SignupFragment" />
+    <fragment
+        android:id="@+id/authentificationFragment"
+        android:name="com.lucacorp.todolucas.login.AuthentificationFragment"
+        android:label="AuthentificationFragment" >
+        <action
+            android:id="@+id/action_authentificationFragment_to_signupFragment"
+            app:destination="@id/signupFragment" />
+        <action
+            android:id="@+id/action_authentificationFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>
