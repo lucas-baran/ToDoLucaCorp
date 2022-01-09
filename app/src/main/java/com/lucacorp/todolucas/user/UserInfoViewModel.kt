@@ -59,12 +59,14 @@ class UserInfoViewModel: ViewModel() {
     fun login(loginDetails: LoginForm) {
         viewModelScope.launch {
             _loginResponse.value = repository.login(loginDetails)
+            loginResponse = _loginResponse
         }
     }
 
     fun signUp(signupDetails: SignUpForm) {
         viewModelScope.launch {
             _signupResponse.value = repository.signUp(signupDetails)
+            signupResponse = _signupResponse
         }
     }
 }
