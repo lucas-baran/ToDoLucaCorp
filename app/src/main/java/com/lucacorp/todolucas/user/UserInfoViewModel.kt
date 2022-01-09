@@ -23,13 +23,11 @@ class UserInfoViewModel: ViewModel() {
     private val _userInfo = MutableStateFlow<UserInfo?>(null)
     var userInfo = _userInfo.asStateFlow()
 
-    var loginResponse: LoginResponse? = null
+    private val _loginResponse = MutableStateFlow<LoginResponse?>(null)
+    var loginResponse = _loginResponse.asStateFlow()
 
-    private val _loginSuccess = MutableStateFlow<Boolean>(false)
-    var loginSuccess = _loginSuccess.asStateFlow()
-
-    private val _signupSuccess = MutableStateFlow<Boolean>(false)
-    var signupSuccess = _signupSuccess.asStateFlow()
+    private val _signupResponse = MutableStateFlow<LoginResponse?>(null)
+    var signupResponse = _signupResponse.asStateFlow()
 
     fun refresh() {
         viewModelScope.launch {
@@ -60,15 +58,13 @@ class UserInfoViewModel: ViewModel() {
 
     fun login(loginDetails: LoginForm) {
         viewModelScope.launch {
-            loginResponse = repository.login(loginDetails)
-            _loginSuccess.value = loginResponse != null
+            _loginResponse.value = repository.login(loginDetails)
         }
     }
 
     fun signUp(signupDetails: SignUpForm) {
         viewModelScope.launch {
-            loginResponse = repository.signUp(signupDetails)
-            _signupSuccess.value = loginResponse != null
+            _signupResponse.value = repository.signUp(signupDetails)
         }
     }
 }

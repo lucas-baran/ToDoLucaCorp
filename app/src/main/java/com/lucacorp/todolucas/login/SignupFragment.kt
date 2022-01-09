@@ -34,10 +34,10 @@ class SignupFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            userViewModel.signupSuccess.collect {
-                if(it) {
+            userViewModel.signupResponse.collect {
+                if(it != null) {
                     PreferenceManager.getDefaultSharedPreferences(context).edit {
-                        putString(Api.SHARED_PREF_TOKEN_KEY, userViewModel.loginResponse?.token)
+                        putString(Api.SHARED_PREF_TOKEN_KEY, it?.token)
                     }
 
                     findNavController().navigate(R.id.action_signupFragment_to_taskListFragment)

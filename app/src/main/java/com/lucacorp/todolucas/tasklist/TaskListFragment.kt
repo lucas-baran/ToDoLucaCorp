@@ -125,14 +125,6 @@ class TaskListFragment : Fragment() {
                 }
             }
         }
-
-        binding.userInfoTextView.text = "${userViewModel.userInfo.value?.firstName} ${userViewModel.userInfo.value?.lastName}"
-
-        binding.userImage.load(userViewModel.userInfo.value?.avatar) {
-            // affiche une image en cas d'erreur:
-            error(R.drawable.ic_launcher_background)
-            transformations(CircleCropTransformation())
-        }
     }
 
     override fun onResume() {

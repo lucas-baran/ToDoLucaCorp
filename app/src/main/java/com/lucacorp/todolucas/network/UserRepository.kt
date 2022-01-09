@@ -38,7 +38,6 @@ class UserRepository {
 
     suspend fun login(loginDetails: LoginForm): LoginResponse? {
         var response = userWebService.login(loginDetails)
-        Log.e("J'aime me battre", "Avant : ${response.message()}")
         if(response.isSuccessful) {
             return response.body()
         }

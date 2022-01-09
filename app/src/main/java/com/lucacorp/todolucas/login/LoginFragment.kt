@@ -45,10 +45,10 @@ class LoginFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            userViewModel.loginSuccess.collect {
-                if(it) {
+            userViewModel.loginResponse.collect {
+                if(it != null) {
                     PreferenceManager.getDefaultSharedPreferences(context).edit {
-                        putString(Api.SHARED_PREF_TOKEN_KEY, userViewModel.loginResponse?.token)
+                        putString(Api.SHARED_PREF_TOKEN_KEY, it?.token)
                     }
 
                     // Redirect
