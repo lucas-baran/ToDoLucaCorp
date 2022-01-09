@@ -70,24 +70,20 @@ class TaskListFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Retrieves the API token from shared preferences.
-        val token = PreferenceManager.getDefaultSharedPreferences(Api.appContext).getString(Api.SHARED_PREF_TOKEN_KEY, "")
-        // If the token does not exist, we redirect to the authentication
-        // activity to retrieve it from the API via a login or signup process.
-        if(token == "") {
-            findNavController().navigate(R.id.action_taskListFragment_to_authentificationFragment)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTaskListBinding.inflate(inflater, container, false)
+
+        val token = PreferenceManager.getDefaultSharedPreferences(Api.appContext).getString(Api.SHARED_PREF_TOKEN_KEY, "")
+        // Redirection sir le token n'existe pas
+        if(token == "") {
+            findNavController().navigate(R.id.action_taskListFragment_to_authentificationFragment)
+            return null;
+        }
+
         return binding.root
     }
 

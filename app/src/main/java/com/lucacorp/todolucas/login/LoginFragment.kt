@@ -47,7 +47,7 @@ class LoginFragment: Fragment() {
         lifecycleScope.launch {
             userViewModel.loginResponse.collect {
                 if(it != null) {
-                    PreferenceManager.getDefaultSharedPreferences(context).edit {
+                    PreferenceManager.getDefaultSharedPreferences(Api.appContext).edit {
                         putString(Api.SHARED_PREF_TOKEN_KEY, it?.token)
                     }
 

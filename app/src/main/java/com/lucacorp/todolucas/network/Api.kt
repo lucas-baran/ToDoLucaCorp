@@ -11,15 +11,15 @@ import retrofit2.Retrofit
 object Api {
     // constantes qui serviront à faire les requêtes
     private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
-    private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1NTAsImV4cCI6MTY3MDMzMjg1MH0.FK7ATDFQt6egYVBR3y979FRajj8QGZdC72rRqdBxRgI"
 
     // client HTTP
     private val okHttpClient by lazy {
         OkHttpClient.Builder()
             .addInterceptor { chain ->
+                val token = PreferenceManager.getDefaultSharedPreferences(appContext).getString(SHARED_PREF_TOKEN_KEY, "")
                 // intercepteur qui ajoute le `header` d'authentification avec votre token:
                 val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $TOKEN")
+                    .addHeader("Authorization", "Bearer $token")
                     .build()
                 chain.proceed(newRequest)
             }
@@ -57,6 +57,5 @@ object Api {
 
     fun setUpContext(context: Context) {
         appContext = context
-        PreferenceManager.getDefaultSharedPreferences(context).getString(SHARED_PREF_TOKEN_KEY, "")
     }
 }
