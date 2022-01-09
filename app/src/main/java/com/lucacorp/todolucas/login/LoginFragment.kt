@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings.Global.putString
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 
 class LoginFragment: Fragment() {
 
-    private val userWebService = Api.userWebService
+    private val userViewModel = UserInfoViewModel()
     private lateinit var binding: FragmentLoginBinding
 
     override fun onCreateView(
@@ -43,22 +44,26 @@ class LoginFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        lifecycleScope.launch {
+            userViewModel.loginSuccess.collect {
+                if(it) {
+                    PreferenceManager.getDefaultSharedPreferences(context).edit {
+                        putString(Api.SHARED_PREF_TOKEN_KEY, userViewModel.loginResponse?.token)
+                    }
+
+                    // Redirect
+                    findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
+                }
+                else {
+                    Toast.makeText(context, "Erreur de connexion", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
         binding.logInButton.setOnClickListener {
             if (binding.emailEditText.text.isNotEmpty() && binding.passwordEditText.text.isNotEmpty()) {
-                lifecycleScope.launch {
-                    val loginForm = LoginForm(email = binding.emailEditText.text.toString(), password = binding.passwordEditText.text.toString())
-                    val response = userWebService.login(loginForm)
-
-                    if (response.isSuccessful){
-                        PreferenceManager.getDefaultSharedPreferences(context).edit {
-                            putString(Api.SHARED_PREF_TOKEN_KEY, response.body()?.token)
-                        }
-                        findNavController().navigate(R.id.action_loginFragment_to_taskListFragment)
-                    }
-                    else{
-                        Toast.makeText(context, "Erreur de connexion", Toast.LENGTH_LONG).show()
-                    }
-                }
+                val loginForm = LoginForm(email = binding.emailEditText.text.toString(), password = binding.passwordEditText.text.toString())
+                userViewModel.login(loginForm)
             }
             else{
                 Toast.makeText(context, "Email ou mdp vide", Toast.LENGTH_LONG).show()

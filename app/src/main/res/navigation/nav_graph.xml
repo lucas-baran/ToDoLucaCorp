@@ -34,5 +34,9 @@
     <fragment
         android:id="@+id/taskListFragment"
         android:name="com.lucacorp.todolucas.tasklist.TaskListFragment"
-        android:label="TaskListFragment" />
+        android:label="TaskListFragment" >
+        <action
+            android:id="@+id/action_taskListFragment_to_authentificationFragment"
+            app:destination="@id/authentificationFragment" />
+    </fragment>
 </navigation>

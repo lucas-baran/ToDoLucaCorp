@@ -2,6 +2,7 @@ package com.lucacorp.todolucas.tasklist
 
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -68,6 +70,18 @@ class TaskListFragment : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Retrieves the API token from shared preferences.
+        val token = PreferenceManager.getDefaultSharedPreferences(Api.appContext).getString(Api.SHARED_PREF_TOKEN_KEY, "")
+        // If the token does not exist, we redirect to the authentication
+        // activity to retrieve it from the API via a login or signup process.
+        if(token == "") {
+            findNavController().navigate(R.id.action_taskListFragment_to_authentificationFragment)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -95,14 +109,14 @@ class TaskListFragment : Fragment() {
 
         // on lance une coroutine car `collect` est `suspend`
         lifecycleScope.launch {
-            taskListViewModel.taskList.collectLatest {
+            taskListViewModel.taskList.collect {
                 adapter.submitList(it)
             }
         }
 
         lifecycleScope.launch {
-            userViewModel.userInfo.collectLatest {
-                binding.userInfoTextView.text = "${it.firstName} ${it.lastName}"
+            userViewModel.userInfo.collect {
+                binding.userInfoTextView.text = "${it?.firstName} ${it?.lastName}"
 
                 binding.userImage.load(it?.avatar) {
                     // affiche une image en cas d'erreur:

@@ -52,25 +52,27 @@ class UserInfoActivity : AppCompatActivity() {
         }
 
         binding.validateUserInfoButton.setOnClickListener {
-            userViewModel.updateUserInfo(UserInfo(
-                email = binding.emailEditText.text.toString(),
-                firstName = binding.firstnameEditText.text.toString(),
-                lastName = binding.lastnameEditText.text.toString()))
-            finish()
+            lifecycleScope.launch {
+                userViewModel.updateUserInfo(UserInfo(
+                    email = binding.emailEditText.text.toString(),
+                    firstName = binding.firstnameEditText.text.toString(),
+                    lastName = binding.lastnameEditText.text.toString()))
+                finish()
+            }
         }
 
         // on lance une coroutine car `collect` est `suspend`
         lifecycleScope.launch {
-            userViewModel.userInfo.collectLatest {
+            userViewModel.userInfo.collect {
                 binding.userImage.load(it?.avatar) {
                     // affiche une image en cas d'erreur:
                     error(R.drawable.ic_launcher_background)
                     transformations(CircleCropTransformation())
                 }
 
-                binding.emailEditText.setText(userViewModel.userInfo.value.email);
-                binding.firstnameEditText.setText(userViewModel.userInfo.value.firstName);
-                binding.lastnameEditText.setText(userViewModel.userInfo.value.lastName);
+                binding.emailEditText.setText(userViewModel.userInfo.value?.email)
+                binding.firstnameEditText.setText(userViewModel.userInfo.value?.firstName)
+                binding.lastnameEditText.setText(userViewModel.userInfo.value?.lastName)
             }
         }
     }
@@ -78,7 +80,9 @@ class UserInfoActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        userViewModel.refresh()
+        lifecycleScope.launch {
+            userViewModel.refresh()
+        }
     }
 
     private fun askCameraPermissionAndOpenCamera() {
